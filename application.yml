@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://admin:admin123@prueba-backend.ka4n1ap.mongodb.net/prueba-tecnica?retryWrites=true&w=majority
