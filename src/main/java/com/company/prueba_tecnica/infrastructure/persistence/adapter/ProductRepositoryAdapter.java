@@ -60,4 +60,15 @@ public class ProductRepositoryAdapter implements ProductRepository {
                         doc.getBranchId()
                 ));
     }
+
+    @Override
+        public Flux<Product> findAll() {
+        return repository.findAll()
+                .map(doc -> new Product(
+                        doc.getId(),
+                        doc.getName(),
+                        doc.getStock(),
+                        doc.getBranchId()
+                ));
+        }
 }

@@ -8,4 +8,5 @@ public interface BranchRepository {
     Mono<Branch> findById(String id);
     Mono<Branch> save(Branch branch);
     Flux<Branch> findByFranchiseId(String franchiseId);
+    Flux<Branch> findAll();
 }

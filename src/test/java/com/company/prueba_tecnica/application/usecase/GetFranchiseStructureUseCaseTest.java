@@ -1,5 +1,6 @@
 package com.company.prueba_tecnica.application.usecase;
 
+
 import com.company.prueba_tecnica.domain.model.Franchise;
 import com.company.prueba_tecnica.domain.repository.FranchiseRepository;
 
@@ -10,15 +11,15 @@ import org.mockito.Mockito;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-class GetAllFranchisesUseCaseTest {
+class GetFranchiseStructureUseCaseTest {
 
     private FranchiseRepository franchiseRepository;
-    private GetAllFranchisesUseCase useCase;
+    private GetFranchiseStructureUseCase useCase;
 
     @BeforeEach
     void setUp() {
         franchiseRepository = Mockito.mock(FranchiseRepository.class);
-        useCase = new GetAllFranchisesUseCase(franchiseRepository);
+        useCase = new GetFranchiseStructureUseCase(franchiseRepository, null, null);
     }
 
     @Test
