@@ -27,10 +27,33 @@ public class GetFranchiseStructureUseCase {
     public Flux<FranchiseDTO> execute() {
 
         return franchiseRepository.findAll()
-                .flatMap(this::mapFranchise);
+        .flatMap(franchise ->
+                branchRepository.findByFranchiseId(franchise.getId())
+                        .flatMap(branch ->
+                                productRepository.findByBranchId(branch.getId())
+                                        .map(product -> new ProductDTO(
+                                                product.getId(),
+                                                product.getName(),
+                                                product.getStock()
+                                        ))
+                                        .collectList()
+                                        .map(products -> new BranchDTO(
+                                                branch.getId(),
+                                                branch.getName(),
+                                                products
+                                        ))
+                        )
+                        .collectList()
+                        .map(branches -> new FranchiseDTO(
+                                franchise.getId(),
+                                franchise.getName(),
+                                branches
+                        ))
+        );
     }
 
-    private Mono<FranchiseDTO> mapFranchise(Franchise franchise) {
+    @SuppressWarnings("unused")
+private Mono<FranchiseDTO> mapFranchise(Franchise franchise) {
 
         return branchRepository.findByFranchiseId(franchise.getId())
                 .flatMap(branch -> mapBranch(branch))
