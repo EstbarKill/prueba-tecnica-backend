@@ -1,6 +1,7 @@
 package com.company.prueba_tecnica.infrastructure.entrypoints;
 
 import com.company.prueba_tecnica.application.usecase.CreateBranchUseCase;
+import com.company.prueba_tecnica.application.usecase.DeleteProductsByBranchUseCase;
 import com.company.prueba_tecnica.application.usecase.dto.BranchDTO;
 import com.company.prueba_tecnica.application.usecase.dto.UpdateNameDTO;
 import com.company.prueba_tecnica.application.usecase.UpdateBranchNameUseCase;
@@ -8,6 +9,8 @@ import com.company.prueba_tecnica.domain.model.Branch;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -18,6 +21,8 @@ public class BranchController {
 
     private final CreateBranchUseCase createBranchUseCase;
     private final UpdateBranchNameUseCase updateBranchNameUseCase;
+    private final DeleteProductsByBranchUseCase deleteProductsByBranchUseCase;
+
 
     @PostMapping
     public Mono<Branch> create(@RequestBody Branch request) {
@@ -34,4 +39,12 @@ public class BranchController {
     ) {
         return updateBranchNameUseCase.execute(id, request);
     }
+
+@DeleteMapping("/{branchId}")
+public Mono<ResponseEntity<Void>> deleteBranch(
+        @PathVariable String branchId
+) {
+    return deleteProductsByBranchUseCase.execute(branchId)
+            .thenReturn(ResponseEntity.noContent().build());
+}
 }

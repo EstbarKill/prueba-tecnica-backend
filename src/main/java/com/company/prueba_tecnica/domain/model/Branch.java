@@ -17,5 +17,5 @@ public class Branch {
 
     public void rename(String name) {
         this.name = name;
-    }
+    }   
 }

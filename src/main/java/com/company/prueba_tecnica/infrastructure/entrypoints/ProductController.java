@@ -8,8 +8,10 @@ import com.company.prueba_tecnica.application.usecase.UpdateProductNameUseCase;
 import com.company.prueba_tecnica.application.usecase.UpdateProductStockUseCase;
 import com.company.prueba_tecnica.domain.model.Product;
 
-import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
+
+
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -43,4 +45,5 @@ public class ProductController {
         ) {
         return updateProductStockUseCase.execute(id, request);
     }
+
 }

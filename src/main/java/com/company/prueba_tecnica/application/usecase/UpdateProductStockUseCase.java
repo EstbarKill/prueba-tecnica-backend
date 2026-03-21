@@ -13,11 +13,12 @@ public class UpdateProductStockUseCase {
 
     private final ProductRepository productRepository;
 
-    public Mono<ProductDTO> execute(String id, UpdateStockDTO request) {
-        return productRepository.findById(id)
+    public Mono<ProductDTO> execute(String productId, UpdateStockDTO request) {
+
+        return productRepository.findById(productId)
                 .switchIfEmpty(Mono.error(new RuntimeException("Product not found")))
                 .flatMap(product -> {
-                    product.changeStock(request.getStock());
+                    product.updateStock(request.getStock()); // lógica en dominio
                     return productRepository.save(product);
                 })
                 .map(saved -> new ProductDTO(
