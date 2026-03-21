@@ -4,7 +4,7 @@ import com.company.prueba_tecnica.application.usecase.CreateFranchiseUseCase;
 import com.company.prueba_tecnica.application.usecase.GetFranchiseStructureUseCase;
 import com.company.prueba_tecnica.application.usecase.GetTopProductsByFranchiseUseCase;
 import com.company.prueba_tecnica.application.usecase.dto.FranchiseDTO;
-import com.company.prueba_tecnica.application.usecase.dto.TopProductByBranchDTO;
+import com.company.prueba_tecnica.application.usecase.dto.FranchiseTopProductsDTO;
 import com.company.prueba_tecnica.domain.model.Franchise;
 
 import lombok.RequiredArgsConstructor;
@@ -40,10 +40,8 @@ public class FranchiseController {
     }
 
 @GetMapping("/{franchiseId}/top-products")
-public Mono<java.util.List<TopProductByBranchDTO>> getTopProducts(
+public Mono<FranchiseTopProductsDTO> getTopProducts(
         @PathVariable String franchiseId) {
-
-    return getTopProductsByFranchiseUseCase.execute(franchiseId)
-            .collectList();
-}
+return getTopProductsByFranchiseUseCase.execute(franchiseId);
+        }
 }
