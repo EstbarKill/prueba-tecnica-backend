@@ -42,15 +42,15 @@ public class BranchRepositoryAdapter implements BranchRepository {
                 ));
     }
 
-    @Override
-    public Flux<Branch> findByFranchiseId(String franchiseId) {
-        return repository.findByFranchiseId(franchiseId)
-                .map(doc -> new Branch(
-                        doc.getId(),
-                        doc.getName(),
-                        doc.getFranchiseId()
-                ));
-    }
+@Override
+public Flux<Branch> findByFranchiseId(String franchiseId) {
+    return repository.findByFranchiseId(franchiseId)
+            .map(doc -> new Branch(
+                    doc.getId(),
+                    doc.getName(),
+                    doc.getFranchiseId()
+            ));
+}
 
     @Override
         public Flux<Branch> findAll() {
