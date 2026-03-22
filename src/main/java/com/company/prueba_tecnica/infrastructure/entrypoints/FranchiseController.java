@@ -2,7 +2,7 @@ package com.company.prueba_tecnica.infrastructure.entrypoints;
 
 import com.company.prueba_tecnica.application.usecase.CreateFranchiseUseCase;
 import com.company.prueba_tecnica.application.usecase.GetFranchiseStructureUseCase;
-import com.company.prueba_tecnica.application.usecase.GetTopProductsByFranchiseUseCase;
+import com.company.prueba_tecnica.application.usecase.GetTopProductByBranchInFranchiseUseCase;
 import com.company.prueba_tecnica.application.usecase.UpdateFranchiseNameUseCase;
 import com.company.prueba_tecnica.application.usecase.dto.FranchiseDTO;
 import com.company.prueba_tecnica.application.usecase.dto.FranchiseTopProductsDTO;
@@ -22,7 +22,7 @@ public class FranchiseController {
 
     private final CreateFranchiseUseCase createFranchiseUseCase;
     private final GetFranchiseStructureUseCase getFranchiseStructureUseCase;
-    private final GetTopProductsByFranchiseUseCase getTopProductsByFranchiseUseCase;
+    private final GetTopProductByBranchInFranchiseUseCase getTopProductByBranchInFranchiseUseCase;
     private final UpdateFranchiseNameUseCase updateFranchiseNameUseCase;
 
     /**
@@ -43,11 +43,12 @@ public class FranchiseController {
         return getFranchiseStructureUseCase.execute();
     }
 
-    @GetMapping("/{franchiseId}/top-products")
-    public Mono<FranchiseTopProductsDTO> getTopProducts(
-            @PathVariable String franchiseId) {
-        return getTopProductsByFranchiseUseCase.execute(franchiseId);
-    }
+@GetMapping("/{franchiseId}/branches/top-products")
+public Mono<FranchiseTopProductsDTO> getTopProductsByBranch(
+        @PathVariable String franchiseId
+) {
+    return getTopProductByBranchInFranchiseUseCase.execute(franchiseId);
+}
 
     @PutMapping("/{id}/name")
     public Mono<FranchiseDTO> updateName(

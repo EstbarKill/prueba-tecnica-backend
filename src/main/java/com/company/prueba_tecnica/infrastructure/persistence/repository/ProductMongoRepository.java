@@ -10,4 +10,8 @@ public interface ProductMongoRepository extends ReactiveMongoRepository<ProductD
 
     Flux<ProductDocument> findByBranchId(String branchId);
         Mono<Void> deleteByBranchId(String branchId);
+        Mono<Boolean> existsByIdAndBranchId(String productId, String branchId);
+
+Mono<Void> deleteById(String id);
+
 }

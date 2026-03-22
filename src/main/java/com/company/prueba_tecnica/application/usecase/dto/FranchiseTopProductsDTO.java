@@ -6,9 +6,9 @@ public class FranchiseTopProductsDTO {
 
     private String id;
     private String name;
-    private List<BranchTopProductDTO> branches;
+    private List<BranchWithProductsAndTopDTO> branches;
 
-    public FranchiseTopProductsDTO(String id, String name, List<BranchTopProductDTO> branches) {
+    public FranchiseTopProductsDTO(String id, String name, List<BranchWithProductsAndTopDTO> branches) {
         this.id = id;
         this.name = name;
         this.branches = branches;
@@ -16,5 +16,5 @@ public class FranchiseTopProductsDTO {
 
     public String getId() { return id; }
     public String getName() { return name; }
-    public List<BranchTopProductDTO> getBranches() { return branches; }
+    public List<BranchWithProductsAndTopDTO> getBranches() { return branches; }
 }

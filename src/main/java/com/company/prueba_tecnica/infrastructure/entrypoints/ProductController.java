@@ -2,6 +2,7 @@ package com.company.prueba_tecnica.infrastructure.entrypoints;
 
 import com.company.prueba_tecnica.application.usecase.CreateProductUseCase;
 import com.company.prueba_tecnica.application.usecase.dto.ProductDTO;
+import com.company.prueba_tecnica.application.usecase.DeleteProductsByBranchUseCase;
 import com.company.prueba_tecnica.application.usecase.dto.UpdateNameDTO;
 import com.company.prueba_tecnica.application.usecase.dto.UpdateStockDTO;
 import com.company.prueba_tecnica.application.usecase.UpdateProductNameUseCase;
@@ -11,7 +12,7 @@ import com.company.prueba_tecnica.domain.model.Product;
 
 import lombok.RequiredArgsConstructor;
 
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -23,6 +24,7 @@ public class ProductController {
     private final CreateProductUseCase createProductUseCase;
     private final UpdateProductNameUseCase updateProductNameUseCase;
     private final UpdateProductStockUseCase updateProductStockUseCase;
+    private final DeleteProductsByBranchUseCase deleteProductsByBranchUseCase;
 
     @PostMapping
     public Mono<Product> create(@RequestBody Product request) {
@@ -45,5 +47,15 @@ public class ProductController {
         ) {
         return updateProductStockUseCase.execute(id, request);
     }
+
+@DeleteMapping("/{productId}/branches/{branchId}")
+public Mono<ResponseEntity<Void>> deleteProductFromBranch(
+        @PathVariable String branchId,
+        @PathVariable String productId
+) {
+    return deleteProductsByBranchUseCase
+            .execute(branchId, productId)
+            .thenReturn(ResponseEntity.noContent().build());
+}
 
 }

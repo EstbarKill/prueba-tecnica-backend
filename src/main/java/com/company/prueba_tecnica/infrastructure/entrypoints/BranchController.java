@@ -40,11 +40,13 @@ public class BranchController {
         return updateBranchNameUseCase.execute(id, request);
     }
 
-@DeleteMapping("/{branchId}")
-public Mono<ResponseEntity<Void>> deleteBranch(
-        @PathVariable String branchId
+@DeleteMapping("/{productId}/branches/{branchId}")
+public Mono<ResponseEntity<Void>> deleteProductFromBranch(
+        @PathVariable String branchId,
+        @PathVariable String productId
 ) {
-    return deleteProductsByBranchUseCase.execute(branchId)
+    return deleteProductsByBranchUseCase
+            .execute(branchId, productId)
             .thenReturn(ResponseEntity.noContent().build());
 }
 }

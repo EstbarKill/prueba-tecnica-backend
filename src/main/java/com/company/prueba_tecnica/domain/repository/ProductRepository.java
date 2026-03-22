@@ -9,4 +9,7 @@ public interface ProductRepository {
     Mono<Product> findById(String id);
     Flux<Product> findByBranchId(String branchId);
     Flux<Product> findAll();
+    Mono<Boolean> existsByIdAndBranchId(String productId, String branchId);
+
+Mono<Void> deleteById(String id);
 }

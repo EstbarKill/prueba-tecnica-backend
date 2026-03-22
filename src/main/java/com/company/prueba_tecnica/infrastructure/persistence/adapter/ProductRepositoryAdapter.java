@@ -66,4 +66,13 @@ public class ProductRepositoryAdapter implements ProductRepository {
                         doc.getBranchId()
                 ));
         }
+        @Override
+public Mono<Boolean> existsByIdAndBranchId(String productId, String branchId) {
+    return repository.existsByIdAndBranchId(productId, branchId);
+}
+
+@Override
+public Mono<Void> deleteById(String productId) {
+    return repository.deleteById(productId);
+}
 }
