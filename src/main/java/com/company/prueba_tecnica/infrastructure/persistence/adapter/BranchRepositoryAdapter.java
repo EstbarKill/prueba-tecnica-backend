@@ -4,6 +4,7 @@ import com.company.prueba_tecnica.domain.model.Branch;
 import com.company.prueba_tecnica.domain.repository.BranchRepository;
 import com.company.prueba_tecnica.infrastructure.persistence.document.BranchDocument;
 import com.company.prueba_tecnica.infrastructure.persistence.repository.BranchMongoRepository;
+import com.company.prueba_tecnica.infrastructure.persistence.repository.ProductMongoRepository;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 public class BranchRepositoryAdapter implements BranchRepository {
 
     private final BranchMongoRepository repository;
+    private final ProductMongoRepository productRepository;
 
     @Override
     public Mono<Branch> findById(String id) {
@@ -53,13 +55,20 @@ public class BranchRepositoryAdapter implements BranchRepository {
     }
 
     @Override
-        public Flux<Branch> findAll() {
+    public Flux<Branch> findAll() {
         return repository.findAll()
                 .map(doc -> new Branch(
                         doc.getId(),
                         doc.getName(),
                         doc.getFranchiseId()
                 ));
-        }
+    }
+@Override
+public Mono<Void> deleteBranchWithProducts(String branchId) {
 
+    return repository.findById(branchId)
+            .switchIfEmpty(Mono.error(new RuntimeException("Branch not found")))
+            .then(productRepository.deleteByBranchId(branchId)) // 🔥 masivo
+            .then(repository.deleteById(branchId));
+}
 }

@@ -11,7 +11,5 @@ public class DeleteProductUseCase {
 
     private final ProductRepository productRepository;
 
-    public Mono<Void> execute(String productId) {
-        return productRepository.deleteById(productId);
-    }
+
 }

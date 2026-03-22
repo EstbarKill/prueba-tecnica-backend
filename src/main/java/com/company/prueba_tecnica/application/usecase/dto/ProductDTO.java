@@ -10,6 +10,7 @@ public class ProductDTO {
         this.id = id;
         this.name = name;
         this.stock = stock;
+        
     }
 
     public String getId() { return id; }

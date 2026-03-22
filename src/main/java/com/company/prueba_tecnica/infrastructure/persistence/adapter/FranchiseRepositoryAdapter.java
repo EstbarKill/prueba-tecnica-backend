@@ -47,5 +47,4 @@ public Flux<Franchise> findAll() {
                     doc.getName()
             ));
 }
-
 }

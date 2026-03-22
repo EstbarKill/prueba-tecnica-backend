@@ -20,7 +20,6 @@ public class CreateBranchUseCase {
                 .switchIfEmpty(Mono.error(new RuntimeException("Franchise not found")))
                 .flatMap(franchise -> {
                     Branch branch = Branch.builder()
-                            .id("Br"+franchiseId)
                             .name(name)
                             .franchiseId(franchiseId)
                             .build();

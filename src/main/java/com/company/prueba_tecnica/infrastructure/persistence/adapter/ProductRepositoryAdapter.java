@@ -35,11 +35,6 @@ public class ProductRepositoryAdapter implements ProductRepository {
     }
 
     @Override
-    public Mono<Void> deleteById(String id) {
-        return repository.deleteById(id);
-    }
-
-    @Override
     public Mono<Product> findById(String id) {
         return repository.findById(id)
                 .map(doc -> new Product(

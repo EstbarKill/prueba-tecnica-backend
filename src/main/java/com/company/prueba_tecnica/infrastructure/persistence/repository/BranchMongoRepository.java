@@ -8,4 +8,5 @@ import com.company.prueba_tecnica.infrastructure.persistence.document.BranchDocu
 public interface BranchMongoRepository extends ReactiveMongoRepository<BranchDocument, String> {
 
     Flux<BranchDocument> findByFranchiseId(String franchiseId);
+
 }
