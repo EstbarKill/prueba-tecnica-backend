@@ -14,65 +14,65 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class ProductRepositoryAdapter implements ProductRepository {
 
-    private final ProductMongoRepository repository;
+        private final ProductMongoRepository repository;
 
-    @Override
-    public Mono<Product> save(Product product) {
-        ProductDocument doc = ProductDocument.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .stock(product.getStock())
-                .branchId(product.getBranchId())
-                .build();
-
-        return repository.save(doc)
-                .map(saved -> new Product(
-                        saved.getId(),
-                        saved.getName(),
-                        saved.getStock(),
-                        saved.getBranchId()
-                ));
-    }
-
-    @Override
-    public Mono<Product> findById(String id) {
-        return repository.findById(id)
-                .map(doc -> new Product(
-                        doc.getId(),
-                        doc.getName(),
-                        doc.getStock(),
-                        doc.getBranchId()
-                ));
-    }
-
-    @Override
-    public Flux<Product> findByBranchId(String branchId) {
-        return repository.findByBranchId(branchId)
-                .map(doc -> new Product(
-                        doc.getId(),
-                        doc.getName(),
-                        doc.getStock(),
-                        doc.getBranchId()
-                ));
-    }
-
-    @Override
-        public Flux<Product> findAll() {
-        return repository.findAll()
-                .map(doc -> new Product(
-                        doc.getId(),
-                        doc.getName(),
-                        doc.getStock(),
-                        doc.getBranchId()
-                ));
-        }
         @Override
-public Mono<Boolean> existsByIdAndBranchId(String productId, String branchId) {
-    return repository.existsByIdAndBranchId(productId, branchId);
+        public Mono<Product> save(Product product) {
+                ProductDocument doc = ProductDocument.builder()
+                                .id(product.getId())
+                                .name(product.getName())
+                                .stock(product.getStock())
+                                .branchId(product.getBranchId())
+                                .build();
+
+                return repository.save(doc)
+                                .map(saved -> new Product(
+                                                saved.getId(),
+                                                saved.getName(),
+                                                saved.getStock(),
+                                                saved.getBranchId()));
+        }
+
+        @Override
+        public Mono<Product> findById(String id) {
+                return repository.findById(id)
+                                .map(doc -> new Product(
+                                                doc.getId(),
+                                                doc.getName(),
+                                                doc.getStock(),
+                                                doc.getBranchId()));
+        }
+
+        @Override
+        public Flux<Product> findByBranchId(String branchId) {
+                return repository.findByBranchId(branchId)
+                                .map(doc -> new Product(
+                                                doc.getId(),
+                                                doc.getName(),
+                                                doc.getStock(),
+                                                doc.getBranchId()));
+        }
+
+        @Override
+        public Flux<Product> findAll() {
+                return repository.findAll()
+                                .map(doc -> new Product(
+                                                doc.getId(),
+                                                doc.getName(),
+                                                doc.getStock(),
+                                                doc.getBranchId()));
+        }
+@Override
+public Mono<Boolean> existsByNameAndBranchId(String name, String branchId) {
+    return repository.existsByNameAndBranchId(name, branchId);
 }
 
 @Override
-public Mono<Void> deleteById(String productId) {
-    return repository.deleteById(productId);
+public Mono<Boolean> existsByNameAndBranchIdAndIdNot(String name, String branchId, String id) {
+    return repository.existsByNameAndBranchIdAndIdNot(name, branchId, id);
+}
+@Override
+public Mono<Boolean> existsByIdAndBranchId(String productId, String branchId) {
+    return repository.existsByIdAndBranchId(productId, branchId);
 }
 }

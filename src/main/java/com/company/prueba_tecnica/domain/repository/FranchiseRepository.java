@@ -11,4 +11,10 @@ public interface FranchiseRepository {
     Mono<Franchise> findById(String id);
     
     Flux<Franchise> findAll();
+
+        Mono<Boolean> existsById(String id);
+
+    Mono<Boolean> existsByName(String name);
+
+    Mono<Boolean> existsByNameAndIdNot(String name, String id);
 }

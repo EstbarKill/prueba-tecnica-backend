@@ -1,8 +1,8 @@
 package com.company.prueba_tecnica.application.usecase;
 
+import com.company.prueba_tecnica.domain.exception.DuplicateResourceException;
 import com.company.prueba_tecnica.domain.model.Branch;
 import com.company.prueba_tecnica.domain.repository.BranchRepository;
-import com.company.prueba_tecnica.domain.repository.FranchiseRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import org.springframework.stereotype.Service;
@@ -12,17 +12,21 @@ import org.springframework.stereotype.Service;
 public class CreateBranchUseCase {
 
     private final BranchRepository branchRepository;
-    private final FranchiseRepository franchiseRepository;
 
     public Mono<Branch> execute(String name, String franchiseId) {
 
-        return franchiseRepository.findById(franchiseId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Franchise not found")))
-                .flatMap(franchise -> {
-                    Branch branch = Branch.builder()
-                            .name(name)
-                            .franchiseId(franchiseId)
-                            .build();
+        Branch branch = Branch.builder()
+                .name(name)
+                .franchiseId(franchiseId)
+                .build();
+
+        return branchRepository.existsByNameAndFranchiseId(name, franchiseId)
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.error(new DuplicateResourceException(
+                                "Branch name already exists in this franchise"
+                        ));
+                    }
 
                     return branchRepository.save(branch);
                 });

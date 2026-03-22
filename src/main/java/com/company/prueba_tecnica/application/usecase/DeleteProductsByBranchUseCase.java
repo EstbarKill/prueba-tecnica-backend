@@ -2,7 +2,7 @@ package com.company.prueba_tecnica.application.usecase;
 
 
 import com.company.prueba_tecnica.domain.exception.BranchNotFoundException;
-import com.company.prueba_tecnica.domain.repository.ProductRepository;
+import com.company.prueba_tecnica.infrastructure.persistence.repository.ProductMongoRepository;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DeleteProductsByBranchUseCase {
 
-private final ProductRepository productRepository;
+private final ProductMongoRepository productRepository;
 
     public Mono<Void> execute(String branchId, String productId) {
 

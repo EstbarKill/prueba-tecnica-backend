@@ -17,10 +17,27 @@ public class UpdateProductNameUseCase {
 
         return productRepository.findById(id)
                 .switchIfEmpty(Mono.error(new RuntimeException("Product not found")))
-                .flatMap(product -> {
-                    product.rename(request.getName());
-                    return productRepository.save(product);
-                })
+
+                // 🔥 VALIDACIÓN DUPLICADO POR BRANCH
+                .flatMap(product ->
+                        productRepository.existsByNameAndBranchIdAndIdNot(
+                                        request.getName(),
+                                        product.getBranchId(),
+                                        id
+                                )
+                                .flatMap(exists -> {
+                                    if (exists) {
+                                        return Mono.error(new RuntimeException(
+                                                "Product name already exists in this branch"
+                                        ));
+                                    }
+
+                                    product.rename(request.getName());
+                                    return productRepository.save(product);
+                                })
+                )
+
+                // 🔥 RESPONSE
                 .map(saved -> new ProductDTO(
                         saved.getId(),
                         saved.getName(),

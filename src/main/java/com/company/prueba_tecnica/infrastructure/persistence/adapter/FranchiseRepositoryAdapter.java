@@ -47,4 +47,18 @@ public Flux<Franchise> findAll() {
                     doc.getName()
             ));
 }
+    @Override
+    public Mono<Boolean> existsById(String id) {
+        return repository.existsById(id);
+    }
+
+    @Override
+    public Mono<Boolean> existsByName(String name) {
+        return repository.existsByName(name);
+    }
+
+    @Override
+    public Mono<Boolean> existsByNameAndIdNot(String name, String id) {
+        return repository.existsByNameAndIdNot(name, id);
+    }
 }

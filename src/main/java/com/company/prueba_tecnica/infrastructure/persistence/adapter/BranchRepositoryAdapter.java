@@ -71,4 +71,18 @@ public Mono<Void> deleteBranchWithProducts(String branchId) {
             .then(productRepository.deleteByBranchId(branchId)) // 🔥 masivo
             .then(repository.deleteById(branchId));
 }
+@Override
+    public Mono<Boolean> existsById(String id) {
+        return repository.existsById(id);
+    }
+
+@Override
+public Mono<Boolean> existsByNameAndFranchiseId(String name, String franchiseId) {
+    return repository.existsByNameAndFranchiseId(name, franchiseId);
+}
+
+@Override
+public Mono<Boolean> existsByNameAndFranchiseIdAndIdNot(String name, String franchiseId, String id) {
+    return repository.existsByNameAndFranchiseIdAndIdNot(name, franchiseId, id);
+}
 }

@@ -23,39 +23,49 @@ public class UpdateFranchiseNameUseCase {
     private final BranchRepository branchRepository;
     private final ProductRepository productRepository;
 
-    
+    public Mono<FranchiseDTO> execute(String id, UpdateNameDTO request) {
 
+        return franchiseRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("Franchise not found")))
 
-public Mono<FranchiseDTO> execute(String id, UpdateNameDTO request) {
+                // 🔥 VALIDACIÓN DE DUPLICADO DE NAME
+                .flatMap(franchise ->
+                        franchiseRepository.existsByNameAndIdNot(request.getName(), id)
+                                .flatMap(exists -> {
+                                    if (exists) {
+                                        return Mono.error(new RuntimeException(
+                                                "Franchise name already exists"
+                                        ));
+                                    }
 
-    return franchiseRepository.findById(id)
-            .switchIfEmpty(Mono.error(new RuntimeException("Franchise not found")))
-            .flatMap(franchise -> {
-                franchise.rename(request.getName());
-                return franchiseRepository.save(franchise);
-            })
-            .flatMap(saved ->
-                    branchRepository.findByFranchiseId(saved.getId())
-                            .flatMap(branch ->
-                                    productRepository.findByBranchId(branch.getId())
-                                            .map(product -> new ProductDTO(
-                                                    product.getId(),
-                                                    product.getName(),
-                                                    product.getStock()
-                                            ))
-                                            .collectList()
-                                            .map(products -> new BranchDTO(
-                                                    branch.getId(),
-                                                    branch.getName(),
-                                                    products
-                                            ))
-                            )
-                            .collectList()
-                            .map(branches -> new FranchiseDTO(
-                                    saved.getId(),
-                                    saved.getName(),
-                                    branches
-                            ))
-            );
-}
+                                    franchise.rename(request.getName());
+                                    return franchiseRepository.save(franchise);
+                                })
+                )
+
+                // 🔥 ARMADO DE RESPONSE
+                .flatMap(saved ->
+                        branchRepository.findByFranchiseId(saved.getId())
+                                .flatMap(branch ->
+                                        productRepository.findByBranchId(branch.getId())
+                                                .map(product -> new ProductDTO(
+                                                        product.getId(),
+                                                        product.getName(),
+                                                        product.getStock()
+                                                ))
+                                                .collectList()
+                                                .map(products -> new BranchDTO(
+                                                        branch.getId(),
+                                                        branch.getName(),
+                                                        products
+                                                ))
+                                )
+                                .collectList()
+                                .map(branches -> new FranchiseDTO(
+                                        saved.getId(),
+                                        saved.getName(),
+                                        branches
+                                ))
+                );
+    }
 }

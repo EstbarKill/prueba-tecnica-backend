@@ -1,5 +1,6 @@
 package com.company.prueba_tecnica.application.usecase;
 
+import com.company.prueba_tecnica.domain.exception.DuplicateResourceException;
 import com.company.prueba_tecnica.domain.model.Franchise;
 import com.company.prueba_tecnica.domain.repository.FranchiseRepository;
 
@@ -19,6 +20,24 @@ public class CreateFranchiseUseCase {
                 .name(name)
                 .build();
 
-        return repository.save(franchise);
+        return repository.existsById(franchise.getId())
+        .flatMap(idExists -> {
+            if (idExists) {
+                return Mono.error(new DuplicateResourceException(
+                        "Franchise id already exists"
+                ));
+            }
+
+            return repository.existsByName(franchise.getName());
+        })
+        .flatMap(nameExists -> {
+            if (nameExists) {
+                return Mono.error(new DuplicateResourceException(
+                        "Franchise name already exists"
+                ));
+            }
+
+            return repository.save(franchise);
+        });
     }
 }

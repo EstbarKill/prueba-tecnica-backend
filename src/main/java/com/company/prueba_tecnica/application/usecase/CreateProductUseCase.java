@@ -18,15 +18,25 @@ public class CreateProductUseCase {
 
         return branchRepository.findById(branchId)
                 .switchIfEmpty(Mono.error(new RuntimeException("Branch not found")))
-                .flatMap(branch -> {
 
-                    Product product = Product.builder()
-                            .name(name)
-                            .stock(stock)
-                            .branchId(branch.getId())
-                            .build();
+                .flatMap(branch ->
 
-                    return productRepository.save(product);
-                });
+                        productRepository.existsByNameAndBranchId(name, branch.getId())
+                                .flatMap(exists -> {
+                                    if (exists) {
+                                        return Mono.error(new RuntimeException(
+                                                "Product name already exists in this branch"
+                                        ));
+                                    }
+
+                                    Product product = Product.builder()
+                                            .name(name)
+                                            .stock(stock)
+                                            .branchId(branch.getId())
+                                            .build();
+
+                                    return productRepository.save(product);
+                                })
+                );
     }
 }
