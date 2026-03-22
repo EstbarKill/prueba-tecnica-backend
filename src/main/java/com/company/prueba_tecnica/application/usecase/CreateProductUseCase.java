@@ -3,6 +3,8 @@ package com.company.prueba_tecnica.application.usecase;
 import com.company.prueba_tecnica.domain.model.Product;
 import com.company.prueba_tecnica.domain.repository.BranchRepository;
 import com.company.prueba_tecnica.domain.repository.ProductRepository;
+import com.company.prueba_tecnica.domain.exception.DuplicateResourceException;
+import com.company.prueba_tecnica.domain.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import org.springframework.stereotype.Service;
@@ -11,20 +13,21 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CreateProductUseCase {
 
-    private final ProductRepository productRepository;
+
     private final BranchRepository branchRepository;
+    private final ProductRepository productRepository;
 
     public Mono<Product> execute(String name, Integer stock, String branchId) {
 
         return branchRepository.findById(branchId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Branch not found")))
+                .switchIfEmpty(Mono.error(new NotFoundException("Branch not found")))
 
                 .flatMap(branch ->
 
                         productRepository.existsByNameAndBranchId(name, branch.getId())
                                 .flatMap(exists -> {
                                     if (exists) {
-                                        return Mono.error(new RuntimeException(
+                                        return Mono.error(new DuplicateResourceException(
                                                 "Product name already exists in this branch"
                                         ));
                                     }

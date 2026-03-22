@@ -2,6 +2,8 @@ package com.company.prueba_tecnica.application.usecase;
 
 import com.company.prueba_tecnica.application.usecase.dto.ProductDTO;
 import com.company.prueba_tecnica.application.usecase.dto.UpdateNameDTO;
+import com.company.prueba_tecnica.domain.exception.NotFoundException;
+import com.company.prueba_tecnica.domain.exception.DuplicateResourceException;
 import com.company.prueba_tecnica.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -16,7 +18,7 @@ public class UpdateProductNameUseCase {
     public Mono<ProductDTO> execute(String id, UpdateNameDTO request) {
 
         return productRepository.findById(id)
-                .switchIfEmpty(Mono.error(new RuntimeException("Product not found")))
+                .switchIfEmpty(Mono.error(new NotFoundException("Product not found")))
 
                 // 🔥 VALIDACIÓN DUPLICADO POR BRANCH
                 .flatMap(product ->
@@ -27,7 +29,7 @@ public class UpdateProductNameUseCase {
                                 )
                                 .flatMap(exists -> {
                                     if (exists) {
-                                        return Mono.error(new RuntimeException(
+                                        return Mono.error(new DuplicateResourceException (
                                                 "Product name already exists in this branch"
                                         ));
                                     }

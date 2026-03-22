@@ -3,6 +3,8 @@ package com.company.prueba_tecnica.application.usecase;
 import com.company.prueba_tecnica.application.usecase.dto.BranchDTO;
 import com.company.prueba_tecnica.application.usecase.dto.ProductDTO;
 import com.company.prueba_tecnica.application.usecase.dto.UpdateNameDTO;
+import com.company.prueba_tecnica.domain.exception.DuplicateResourceException;
+import com.company.prueba_tecnica.domain.exception.NotFoundException;
 import com.company.prueba_tecnica.domain.repository.BranchRepository;
 import com.company.prueba_tecnica.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,7 @@ public class UpdateBranchNameUseCase {
     public Mono<BranchDTO> execute(String id, UpdateNameDTO request) {
 
         return branchRepository.findById(id)
-                .switchIfEmpty(Mono.error(new RuntimeException("Branch not found")))
+                .switchIfEmpty(Mono.error(new NotFoundException("Branch not found")))
 
                 // 🔥 VALIDACIÓN DE DUPLICADO
                 .flatMap(branch ->
@@ -30,7 +32,7 @@ public class UpdateBranchNameUseCase {
                                 )
                                 .flatMap(exists -> {
                                     if (exists) {
-                                        return Mono.error(new RuntimeException(
+                                        return Mono.error(new DuplicateResourceException(
                                                 "Branch name already exists in this franchise"
                                         ));
                                     }

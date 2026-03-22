@@ -3,6 +3,7 @@ package com.company.prueba_tecnica.application.usecase;
 
 import com.company.prueba_tecnica.application.usecase.dto.UpdateNameDTO;
 import com.company.prueba_tecnica.domain.repository.FranchiseRepository;
+import com.company.prueba_tecnica.domain.exception.DuplicateResourceException;
 import com.company.prueba_tecnica.domain.repository.BranchRepository;
 import com.company.prueba_tecnica.domain.repository.ProductRepository;
 import com.company.prueba_tecnica.application.usecase.dto.BranchDTO;
@@ -33,7 +34,7 @@ public class UpdateFranchiseNameUseCase {
                         franchiseRepository.existsByNameAndIdNot(request.getName(), id)
                                 .flatMap(exists -> {
                                     if (exists) {
-                                        return Mono.error(new RuntimeException(
+                                        return Mono.error(new DuplicateResourceException(
                                                 "Franchise name already exists"
                                         ));
                                     }

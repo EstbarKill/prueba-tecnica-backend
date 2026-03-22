@@ -1,8 +1,8 @@
 package com.company.prueba_tecnica.application.usecase;
 
 
-import com.company.prueba_tecnica.domain.exception.BranchNotFoundException;
 import com.company.prueba_tecnica.infrastructure.persistence.repository.ProductMongoRepository;
+import com.company.prueba_tecnica.domain.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -19,7 +19,7 @@ private final ProductMongoRepository productRepository;
         return productRepository.existsByIdAndBranchId(productId, branchId)
                 .flatMap(exists -> {
                     if (!exists) {
-                        return Mono.error(new BranchNotFoundException(
+                        return Mono.error(new NotFoundException(
                                 "Product " + productId + " not found in branch " + branchId
                         ));
                     }

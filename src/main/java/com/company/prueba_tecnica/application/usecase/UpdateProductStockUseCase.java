@@ -1,6 +1,7 @@
 package com.company.prueba_tecnica.application.usecase;
 
 import com.company.prueba_tecnica.application.usecase.dto.ProductDTO;
+import com.company.prueba_tecnica.domain.exception.NotFoundException;
 import com.company.prueba_tecnica.domain.repository.ProductRepository;
 import com.company.prueba_tecnica.application.usecase.dto.UpdateStockDTO;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class UpdateProductStockUseCase {
     public Mono<ProductDTO> execute(String productId, UpdateStockDTO request) {
 
         return productRepository.findById(productId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Product not found")))
+                .switchIfEmpty(Mono.error(new NotFoundException("Product not found")))
                 .flatMap(product -> {
                     product.updateStock(request.getStock()); // lógica en dominio
                     return productRepository.save(product);

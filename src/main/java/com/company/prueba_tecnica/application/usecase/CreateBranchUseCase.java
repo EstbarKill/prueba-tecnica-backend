@@ -1,6 +1,6 @@
 package com.company.prueba_tecnica.application.usecase;
 
-import com.company.prueba_tecnica.domain.exception.DuplicateResourceException;
+import com.company.prueba_tecnica.domain.exception.NotFoundException;
 import com.company.prueba_tecnica.domain.model.Branch;
 import com.company.prueba_tecnica.domain.repository.BranchRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class CreateBranchUseCase {
         return branchRepository.existsByNameAndFranchiseId(name, franchiseId)
                 .flatMap(exists -> {
                     if (exists) {
-                        return Mono.error(new DuplicateResourceException(
+                        return Mono.error(new NotFoundException(
                                 "Branch name already exists in this franchise"
                         ));
                     }

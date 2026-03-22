@@ -1,6 +1,7 @@
 package com.company.prueba_tecnica.application.usecase;
 
 import com.company.prueba_tecnica.application.usecase.dto.*;
+import com.company.prueba_tecnica.domain.exception.NotFoundException;
 import com.company.prueba_tecnica.domain.repository.BranchRepository;
 import com.company.prueba_tecnica.domain.repository.FranchiseRepository;
 import com.company.prueba_tecnica.domain.repository.ProductRepository;
@@ -21,7 +22,7 @@ public class GetTopProductByBranchInFranchiseUseCase {
     public Mono<FranchiseTopProductsDTO> execute(String franchiseId) {
 
         return franchiseRepository.findById(franchiseId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Franchise not found")))
+                .switchIfEmpty(Mono.error(new NotFoundException("Franchise not found")))
                 .flatMap(franchise ->
 
                         branchRepository.findByFranchiseId(franchise.getId())

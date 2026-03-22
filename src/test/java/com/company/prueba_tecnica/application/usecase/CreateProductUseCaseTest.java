@@ -1,5 +1,7 @@
 package com.company.prueba_tecnica.application.usecase;
 
+import com.company.prueba_tecnica.domain.exception.DuplicateResourceException;
+import com.company.prueba_tecnica.domain.exception.NotFoundException;
 import com.company.prueba_tecnica.domain.model.Branch;
 import com.company.prueba_tecnica.domain.model.Product;
 import com.company.prueba_tecnica.domain.repository.BranchRepository;
@@ -14,17 +16,17 @@ import reactor.test.StepVerifier;
 
 class CreateProductUseCaseTest {
 
-    private ProductRepository productRepository;
     private BranchRepository branchRepository;
+    private ProductRepository productRepository;
 
     private CreateProductUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        productRepository = Mockito.mock(ProductRepository.class);
         branchRepository = Mockito.mock(BranchRepository.class);
+        productRepository = Mockito.mock(ProductRepository.class);
 
-        useCase = new CreateProductUseCase(productRepository, branchRepository);
+        useCase = new CreateProductUseCase(branchRepository, productRepository);
     }
 
     @Test
@@ -45,9 +47,11 @@ class CreateProductUseCaseTest {
                 .branchId(branchId)
                 .build();
 
-        // Mock comportamiento
         Mockito.when(branchRepository.findById(branchId))
                 .thenReturn(Mono.just(branch));
+
+        Mockito.when(productRepository.existsByNameAndBranchId("Producto A", branchId))
+                .thenReturn(Mono.just(false));
 
         Mockito.when(productRepository.save(Mockito.any()))
                 .thenReturn(Mono.just(product));
@@ -64,7 +68,7 @@ class CreateProductUseCaseTest {
     }
 
     @Test
-    void shouldFailWhenBranchNotExists() {
+    void shouldFailWhenBranchNotFound() {
 
         String branchId = "invalid";
 
@@ -75,8 +79,35 @@ class CreateProductUseCaseTest {
 
         StepVerifier.create(result)
                 .expectErrorMatches(error ->
-                        error instanceof RuntimeException &&
+                        error instanceof NotFoundException &&
                         error.getMessage().equals("Branch not found")
+                )
+                .verify();
+    }
+
+    @Test
+    void shouldFailWhenProductAlreadyExists() {
+
+        String branchId = "branch-1";
+
+        Branch branch = Branch.builder()
+                .id(branchId)
+                .name("Sucursal 1")
+                .franchiseId("franchise-1")
+                .build();
+
+        Mockito.when(branchRepository.findById(branchId))
+                .thenReturn(Mono.just(branch));
+
+        Mockito.when(productRepository.existsByNameAndBranchId("Producto A", branchId))
+                .thenReturn(Mono.just(true));
+
+        Mono<Product> result = useCase.execute("Producto A", 10, branchId);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(error ->
+                        error instanceof DuplicateResourceException &&
+                        error.getMessage().equals("Product name already exists in this branch")
                 )
                 .verify();
     }

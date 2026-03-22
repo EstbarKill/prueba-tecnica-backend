@@ -1,5 +1,6 @@
 package com.company.prueba_tecnica.application.usecase;
 
+
 import com.company.prueba_tecnica.domain.model.*;
 import com.company.prueba_tecnica.domain.repository.*;
 
@@ -8,15 +9,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-class GetFranchiseStructureUseCaseTest {
+class UpdateFranchiseNameUseCaseTest {
 
     private FranchiseRepository franchiseRepository;
     private BranchRepository branchRepository;
     private ProductRepository productRepository;
 
-    private GetFranchiseStructureUseCase useCase;
+    private UpdateFranchiseNameUseCase useCase;
 
     @BeforeEach
     void setUp() {
@@ -24,7 +26,7 @@ class GetFranchiseStructureUseCaseTest {
         branchRepository = Mockito.mock(BranchRepository.class);
         productRepository = Mockito.mock(ProductRepository.class);
 
-        useCase = new GetFranchiseStructureUseCase(
+        useCase = new UpdateFranchiseNameUseCase(
                 franchiseRepository,
                 branchRepository,
                 productRepository
@@ -32,37 +34,26 @@ class GetFranchiseStructureUseCaseTest {
     }
 
     @Test
-    void shouldReturnFranchiseStructure() {
+    void shouldUpdateFranchise() {
 
         Franchise franchise = Franchise.builder()
                 .id("f1")
-                .name("Franchise")
+                .name("old")
                 .build();
 
-        Branch branch = Branch.builder()
-                .id("b1")
-                .name("Branch")
-                .franchiseId("f1")
-                .build();
+        Mockito.when(franchiseRepository.findById("f1"))
+                .thenReturn(Mono.just(franchise));
 
-        Product product = Product.builder()
-                .id("p1")
-                .name("Prod")
-                .stock(10)
-                .branchId("b1")
-                .build();
+        Mockito.when(franchiseRepository.existsByNameAndIdNot(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(Mono.just(false));
 
-        Mockito.when(franchiseRepository.findAll())
-                .thenReturn(Flux.just(franchise));
+        Mockito.when(franchiseRepository.save(Mockito.any()))
+                .thenReturn(Mono.just(franchise));
 
         Mockito.when(branchRepository.findByFranchiseId("f1"))
-                .thenReturn(Flux.just(branch));
+                .thenReturn(Flux.empty());
 
-        Mockito.when(productRepository.findByBranchId("b1"))
-                .thenReturn(Flux.just(product));
-
-        StepVerifier.create(useCase.execute())
-                .expectNextCount(1)
+        StepVerifier.create(useCase.execute("f1", new com.company.prueba_tecnica.application.usecase.dto.UpdateNameDTO()))
                 .verifyComplete();
     }
 }
