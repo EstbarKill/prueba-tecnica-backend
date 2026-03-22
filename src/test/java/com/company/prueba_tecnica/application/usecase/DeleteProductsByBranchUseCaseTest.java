@@ -10,6 +10,13 @@ import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+/**
+ * Tests unitarios para DeleteProductsByBranchUseCase.
+ *
+ * Verifica que:
+ *   - Un producto se elimina correctamente cuando existe en la sucursal
+ *   - Se lanza NotFoundException cuando el producto no pertenece a la sucursal
+ */
 class DeleteProductsByBranchUseCaseTest {
 
     private ProductMongoRepository productRepository;
@@ -21,22 +28,32 @@ class DeleteProductsByBranchUseCaseTest {
         useCase = new DeleteProductsByBranchUseCase(productRepository);
     }
 
+    /**
+     * Caso feliz: el producto existe en la sucursal → se elimina y el Mono completa.
+     */
     @Test
     void shouldDeleteProductSuccessfully() {
 
+        // El producto "p1" pertenece a la sucursal "b1"
         Mockito.when(productRepository.existsByIdAndBranchId("p1", "b1"))
                 .thenReturn(Mono.just(true));
 
+        // deleteById retorna Mono<Void> vacío al completarse
         Mockito.when(productRepository.deleteById("p1"))
                 .thenReturn(Mono.empty());
 
+        // verifyComplete() asegura que el Mono completó sin errores ni valores
         StepVerifier.create(useCase.execute("b1", "p1"))
                 .verifyComplete();
     }
 
+    /**
+     * El producto no existe en la sucursal → debe emitir NotFoundException.
+     */
     @Test
     void shouldFailWhenProductNotFound() {
 
+        // El producto no pertenece a esta sucursal
         Mockito.when(productRepository.existsByIdAndBranchId("p1", "b1"))
                 .thenReturn(Mono.just(false));
 

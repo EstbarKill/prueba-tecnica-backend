@@ -14,21 +14,30 @@ import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+/**
+ * Tests unitarios para CreateProductUseCase.
+ *
+ * Verifica los tres escenarios posibles:
+ *   1. Producto creado exitosamente
+ *   2. Error cuando la sucursal no existe
+ *   3. Error cuando el nombre del producto ya existe en la sucursal
+ */
 class CreateProductUseCaseTest {
 
     private BranchRepository branchRepository;
     private ProductRepository productRepository;
-
     private CreateProductUseCase useCase;
 
     @BeforeEach
     void setUp() {
         branchRepository = Mockito.mock(BranchRepository.class);
         productRepository = Mockito.mock(ProductRepository.class);
-
         useCase = new CreateProductUseCase(branchRepository, productRepository);
     }
 
+    /**
+     * Caso feliz: sucursal existe, nombre disponible → producto creado.
+     */
     @Test
     void shouldCreateProductSuccessfully() {
 
@@ -47,6 +56,7 @@ class CreateProductUseCaseTest {
                 .branchId(branchId)
                 .build();
 
+        // Sucursal existe, nombre libre, save exitoso
         Mockito.when(branchRepository.findById(branchId))
                 .thenReturn(Mono.just(branch));
 
@@ -56,9 +66,7 @@ class CreateProductUseCaseTest {
         Mockito.when(productRepository.save(Mockito.any()))
                 .thenReturn(Mono.just(product));
 
-        Mono<Product> result = useCase.execute("Producto A", 10, branchId);
-
-        StepVerifier.create(result)
+        StepVerifier.create(useCase.execute("Producto A", 10, branchId))
                 .expectNextMatches(p ->
                         p.getName().equals("Producto A") &&
                         p.getStock() == 10 &&
@@ -67,17 +75,17 @@ class CreateProductUseCaseTest {
                 .verifyComplete();
     }
 
+    /**
+     * La sucursal no existe → debe emitir NotFoundException.
+     */
     @Test
     void shouldFailWhenBranchNotFound() {
 
-        String branchId = "invalid";
-
-        Mockito.when(branchRepository.findById(branchId))
+        // findById retorna Mono vacío → switchIfEmpty dispara NotFoundException
+        Mockito.when(branchRepository.findById("invalid"))
                 .thenReturn(Mono.empty());
 
-        Mono<Product> result = useCase.execute("Producto A", 10, branchId);
-
-        StepVerifier.create(result)
+        StepVerifier.create(useCase.execute("Producto A", 10, "invalid"))
                 .expectErrorMatches(error ->
                         error instanceof NotFoundException &&
                         error.getMessage().equals("Branch not found")
@@ -85,6 +93,9 @@ class CreateProductUseCaseTest {
                 .verify();
     }
 
+    /**
+     * Nombre de producto duplicado en la sucursal → DuplicateResourceException.
+     */
     @Test
     void shouldFailWhenProductAlreadyExists() {
 
@@ -96,15 +107,14 @@ class CreateProductUseCaseTest {
                 .franchiseId("franchise-1")
                 .build();
 
+        // Sucursal existe, pero el nombre del producto ya está tomado
         Mockito.when(branchRepository.findById(branchId))
                 .thenReturn(Mono.just(branch));
 
         Mockito.when(productRepository.existsByNameAndBranchId("Producto A", branchId))
                 .thenReturn(Mono.just(true));
 
-        Mono<Product> result = useCase.execute("Producto A", 10, branchId);
-
-        StepVerifier.create(result)
+        StepVerifier.create(useCase.execute("Producto A", 10, branchId))
                 .expectErrorMatches(error ->
                         error instanceof DuplicateResourceException &&
                         error.getMessage().equals("Product name already exists in this branch")

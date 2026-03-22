@@ -11,6 +11,12 @@ import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+/**
+ * Tests unitarios para UpdateProductStockUseCase.
+ *
+ * Verifica que el stock de un producto se actualiza correctamente
+ * cuando el producto existe.
+ */
 class UpdateProductStockUseCaseTest {
 
     private ProductRepository productRepository;
@@ -22,6 +28,12 @@ class UpdateProductStockUseCaseTest {
         useCase = new UpdateProductStockUseCase(productRepository);
     }
 
+    /**
+     * Caso feliz: producto existe → stock actualizado y Mono completa.
+     *
+     * Se usa UpdateStockDTO(null) para simplificar el test; en un escenario
+     * real el stock debería ser un valor válido >= 0.
+     */
     @Test
     void shouldUpdateStock() {
 
@@ -32,9 +44,11 @@ class UpdateProductStockUseCaseTest {
                 .branchId("b1")
                 .build();
 
+        // Producto encontrado
         Mockito.when(productRepository.findById("p1"))
                 .thenReturn(Mono.just(product));
 
+        // save devuelve el producto con el stock actualizado
         Mockito.when(productRepository.save(Mockito.any()))
                 .thenReturn(Mono.just(product));
 
