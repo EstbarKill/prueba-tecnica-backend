@@ -70,7 +70,7 @@ com.company.prueba_tecnica/
 | `POST` | `/franchises` | Crear franquicia |
 | `PUT` | `/franchises/{id}/name` | Actualizar nombre |
 | `GET` | `/franchises/structure` | Estructura completa |
-| `GET` | `/franchises/{id}/branches/top-products` | Producto con mayor stock por sucursal |
+| `GET` | `/franchises/{franchiseId}/branches/top-products` | Producto con mayor stock por sucursal |
 
 ### Sucursales
 
@@ -78,7 +78,7 @@ com.company.prueba_tecnica/
 |--------|------|-------------|
 | `POST` | `/branches` | Crear sucursal |
 | `PUT` | `/branches/{id}/name` | Actualizar nombre |
-| `DELETE` | `/branches/{productId}/branches/{branchId}` | Eliminar producto de sucursal |
+| `DELETE` | `/{productId}/branches/{branchId}` | Eliminar producto de sucursal |
 
 ### Productos
 
